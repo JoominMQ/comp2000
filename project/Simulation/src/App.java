@@ -17,11 +17,16 @@ public class App {
                 g.fillRect(0, 300, width, 200);     // horizontal
                 g.fillRect(300, 0, 200, height);    // vertical
                 g.setColor(Color.green);
-                g.fillRect(290, 300, 10, 200);// left
-                g.fillRect(500, 300, 10, 200);// right
-                g.fillRect(300, 290, 200, 10);// left
-                g.fillRect(300, 500, 200, 10);// right
-
+                //g.fillRect(290, 300, 10, 200);// left
+                //g.fillRect(500, 300, 10, 200);// right
+                //g.fillRect(300, 290, 200, 10);// left
+                //g.fillRect(300, 500, 200, 10);// right
+                
+                Lights light = new Lights(g, 290, 300, 10, 200);
+                light.changeLight(3);
+                light.spawnLight();
+                repaint();
+                
             }
         };
 
