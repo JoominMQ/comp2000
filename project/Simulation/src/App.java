@@ -25,7 +25,7 @@ public class App {
                 Lights light = new Lights(g, 290, 300, 10, 200);
                 light.changeLight(3);
                 light.spawnLight();
-                repaint();
+                
                 
             }
         };
