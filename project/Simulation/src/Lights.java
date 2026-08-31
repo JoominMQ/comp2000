@@ -16,25 +16,27 @@ public class Lights {
         this.y = why;
         this.width = with;
         this.height = hite;
+        this.colourMode = 1; // Start green
     }
 
     public void spawnLight() {
-        g.setColor(Color.GREEN);
-        g.fillRect(x, y, width, height);
-    }
-
-    public void changeLight(int type){
-        this.colourMode = type;
         if (colourMode == 1) {
             g.setColor(Color.GREEN);
         }
-
         else if (colourMode == 2) {
-            g.setColor(Color.GREEN);
+            g.setColor(Color.YELLOW);
+        }
+        else if (colourMode == 3) {
+            g.setColor(Color.RED);
         }
 
-        else if (colourMode == 3) {
-            g.setColor(Color.GREEN);
-        }
+        g.fillRect(x, y, width, height);
     }
+
+    public void changeLight(int type) {
+        this.colourMode = type;
+        
+    }
+
+
 }
