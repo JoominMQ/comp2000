@@ -38,5 +38,9 @@ public class Lights {
         
     }
 
+    public int getColour() {
+        return colourMode;
+    }
+
 
 }
