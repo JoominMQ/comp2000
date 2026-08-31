@@ -13,14 +13,16 @@ public class App {
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
 
+                //roads
                 g.setColor(Color.GRAY);
                 g.fillRect(0, 300, width, 200);     // horizontal
                 g.fillRect(300, 0, 200, height);    // vertical
-                g.setColor(Color.green);
-                //g.fillRect(290, 300, 10, 200);// left
-                //g.fillRect(500, 300, 10, 200);// right
-                //g.fillRect(300, 290, 200, 10);// left
-                //g.fillRect(300, 500, 200, 10);// right
+
+                //line dividers
+                g.setColor(Color.BLACK);
+                g.drawLine(0, height/2, width, height/2);
+                g.drawLine(width/2, 0, width/2, height);
+                
                 
                 Lights lightLeft = new Lights(g, 290, 300, 10, 200);
                 lightLeft.changeLight(3);
@@ -37,7 +39,7 @@ public class App {
                 Lights lightBottom = new Lights(g, 300, 500, 200, 10);
                 lightBottom.changeLight(3);
                 lightBottom.spawnLight();
-                
+
                 
             }
         };
