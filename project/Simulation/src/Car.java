@@ -1,8 +1,8 @@
 import java.awt.*;
 
 public class Car {
-    int x;
-    int y;
+    float x;
+    float y;
     int width;
     int height;
     int speed;
@@ -17,13 +17,14 @@ public class Car {
         this.color = color;
     }
 
-    public void move() {
-        x += speed;
+    public void move(double deltaSeconds) {
+        System.out.println("Moving car by " + (speed * deltaSeconds) + " pixels" + " at speed " + speed + " pixels/second" + " with deltaSeconds " + deltaSeconds);
+        x += (speed * deltaSeconds);
     }
 
     public void draw(Graphics g) {
         g.setColor(color);
-        g.fillRect(x, y, width, height);
+        g.fillRect((int) x, (int) y, width, height);
     }
 
 

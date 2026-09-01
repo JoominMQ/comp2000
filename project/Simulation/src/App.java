@@ -1,12 +1,15 @@
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.*;
+
 
 public class App {
 
     static int worldTimeElapsed = 0;
 
     static lightManager trafficLights;
-    static Car car1;
+    static List<Car> cars = new ArrayList<>();
 
     public static void main(String[] args) {
 
@@ -16,7 +19,13 @@ public class App {
         trafficLights = new lightManager();
 
         // Create car
-        car1 = new Car(0, 390, 40, 20, 3, Color.RED);
+
+        Car new_1car = new Car(0, 450, 40, 20, 50, Color.RED);
+        Car new2_car = new Car(0, 390, 40, 20, 25, Color.RED);
+        Car new3_car = new Car(0, 330, 40, 20, 35, Color.RED);
+        cars.add(new_1car);
+        cars.add(new2_car);
+        cars.add(new3_car);
 
         JFrame frame = new JFrame("Traffic Sim");
 
@@ -48,19 +57,26 @@ public class App {
                     40
                 );
 
-                car1.draw(g);
+                for (Car car : cars) {
+                    car.draw(g);
+                }
             }
         };
-
+        long[] lastTime = { System.nanoTime() };
+        long startTime = System.currentTimeMillis();
         // timer for animation
         Timer timer = new Timer(16, e -> {
+            long currentTime = System.nanoTime();
+            double deltaTime = (currentTime - lastTime[0]) / 1_000_000_000.0; // Convert to seconds
+            lastTime[0] = currentTime; // Update lastTime for the next frame
 
+            worldTimeElapsed = (int) (System.currentTimeMillis() - startTime);
 
-            worldTimeElapsed += 16;
+            for (Car car : cars) {
+                car.move(deltaTime);
+            }
 
-            car1.move();
-
-            // i dont like alex
+            // i dont like alex // you'll have to deal with it lol
             trafficLights.update();
 
             panel.repaint();
