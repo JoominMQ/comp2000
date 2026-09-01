@@ -11,6 +11,7 @@ public class App {
     static Lights lightRight;
     static Lights lightTop;
     static Lights lightBottom;
+    static Car car1;
 
     public static void main(String[] args) {
         int width = 800;
@@ -23,6 +24,10 @@ public class App {
         lightRight = new Lights(500, 300, 10, 200);
         lightTop = new Lights(300, 290, 200, 10);
         lightBottom = new Lights(300, 500, 200, 10);
+
+        // in me mums car
+        car1 = new Car(0, 390, 40, 20, 3, Color.RED);
+
 
         JFrame frame = new JFrame("Traffic Sim");
 
@@ -53,6 +58,8 @@ public class App {
                 g.setFont(new Font("Arial", Font.BOLD, 30));
                 g.drawString("Time elapsed: " + worldTimeElapsed / 1000 + "s", 20, 40);
 
+                // draw car
+                car1.draw(g);
             }
         };
 
@@ -61,6 +68,7 @@ public class App {
             worldTimeElapsed += 16;
             elapsedTime += 16;
             
+            car1.move();
             lightStates();
             System.out.println(elapsedTime);
 
@@ -73,6 +81,7 @@ public class App {
         frame.setSize(width, height);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
+
     }
 
     static void lightStates() {
