@@ -21,7 +21,7 @@ public class Lights {
             g.setColor(Color.GREEN);
         }
         else if (colourMode == 2) {
-            g.setColor(Color.YELLOW);
+            g.setColor(Color.ORANGE);
         }
         else if (colourMode == 3) {
             g.setColor(Color.RED);
@@ -31,10 +31,15 @@ public class Lights {
     }
 
     public void changeLight(int type) {
+        if (type < 1 || type > 3) {
+            throw new IllegalArgumentException("Invalid light colour");
+        }
         this.colourMode = type;
     }
 
     public int getColour() {
         return colourMode;
     }
+
+
 }
