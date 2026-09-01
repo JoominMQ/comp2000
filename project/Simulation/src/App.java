@@ -2,47 +2,57 @@ import java.awt.*;
 import javax.swing.*;
 
 public class App {
-    public static void main(String[] args) throws Exception {
+
+    public static void main(String[] args) {
         int width = 800;
         int height = 800;
 
-        JFrame frame = new JFrame("Test stringing nows");
+        // create light objects
+        Lights lightLeft = new Lights(290, 300, 10, 200);
+        Lights lightRight = new Lights(500, 300, 10, 200);
+        Lights lightTop = new Lights(300, 290, 200, 10);
+        Lights lightBottom = new Lights(300, 500, 200, 10);
+
+        JFrame frame = new JFrame("Traffic Lights");
 
         JPanel panel = new JPanel() {
+
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
 
-                //roads
+                // Roads
                 g.setColor(Color.GRAY);
-                g.fillRect(0, 300, width, 200);     // horizontal
-                g.fillRect(300, 0, 200, height);    // vertical
+                g.fillRect(0, 300, width, 200);
+                g.fillRect(300, 0, 200, height);
 
-                //line dividers
+                // Line dividers
                 g.setColor(Color.BLACK);
-                g.drawLine(0, height/2, width, height/2);
-                g.drawLine(width/2, 0, width/2, height);
-                
-                
-                Lights lightLeft = new Lights(g, 290, 300, 10, 200);
-                lightLeft.changeLight(3);
-                lightLeft.spawnLight();
+                g.drawLine(0, height / 2, width, height / 2);
+                g.drawLine(width / 2, 0, width / 2, height);
 
-                Lights lightRight = new Lights(g, 500, 300, 10, 200);
-                lightRight.changeLight(3);
-                lightRight.spawnLight();
-
-                Lights lightTop = new Lights(g, 300, 290, 200, 10);
-                lightTop.changeLight(3);
-                lightTop.spawnLight();
-
-                Lights lightBottom = new Lights(g, 300, 500, 200, 10);
-                lightBottom.changeLight(3);
-                lightBottom.spawnLight();
-
-                
+                // Draw lights
+                lightLeft.spawnLight(g);
+                lightRight.spawnLight(g);
+                lightTop.spawnLight(g);
+                lightBottom.spawnLight(g);
             }
         };
+
+        // Animation timer
+        Timer timer = new Timer(16, e -> {
+            
+            // Change lights here
+            lightLeft.changeLight(1);
+            lightRight.changeLight(1);
+            lightTop.changeLight(3);
+            lightBottom.changeLight(3);
+
+            // Redraw
+            panel.repaint();
+        });
+
+        timer.start();
 
         frame.add(panel);
         frame.setSize(width, height);

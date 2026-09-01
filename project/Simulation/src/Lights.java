@@ -8,10 +8,7 @@ public class Lights {
     private int height;
     private int colourMode;
 
-    private Graphics g;
-
-    public Lights(Graphics g, int ecks, int why, int with, int hite) {
-        this.g = g;
+    public Lights(int ecks, int why, int with, int hite) {
         this.x = ecks;
         this.y = why;
         this.width = with;
@@ -19,7 +16,7 @@ public class Lights {
         this.colourMode = 1; // Start green
     }
 
-    public void spawnLight() {
+    public void spawnLight(Graphics g) {
         if (colourMode == 1) {
             g.setColor(Color.GREEN);
         }
@@ -35,12 +32,9 @@ public class Lights {
 
     public void changeLight(int type) {
         this.colourMode = type;
-        
     }
 
     public int getColour() {
         return colourMode;
     }
-
-
 }
