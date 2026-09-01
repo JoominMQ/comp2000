@@ -56,7 +56,7 @@ public class App {
             }
         };
 
-        // timer
+        // timer for animation
         Timer timer = new Timer(16, e -> {
             worldTimeElapsed += 16;
             elapsedTime += 16;
@@ -158,7 +158,7 @@ public class App {
         } catch (IllegalArgumentException e) {
             System.out.println("Traffic light error");
         }
-        
+
     }
 
 }
