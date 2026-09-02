@@ -1,14 +1,18 @@
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import javax.swing.*;
 
 public class App {
 
-    static int worldTimeElapsed = 0;
+    static float worldTimeElapsed = 0;
 
     static lightManager trafficLights;
+    // Cars List and spawn timer
     static List<Car> cars = new ArrayList<>();
+    static int lastCarSpawnTime = 0;
+    static final int CAR_SPAWN_INTERVAL_MS = 2000;
 
     public static void main(String[] args) {
 
@@ -17,12 +21,11 @@ public class App {
 
         trafficLights = new lightManager();
 
-        // Create car
-
-        Car new_1car = new Car(0, 450, 40, 20, 50, 0, Color.RED);
-        Car new2_car = new Car(500, 40, 40, 20, 25, (float) Math.PI / 2, Color.RED);
-        Car new3_car = new Car(0, 330, 40, 20, 35, 0, Color.RED);
-        cars.add(new_1car);
+        // Create cars
+        Car new1_car = new Car(0, 340, 40, 20, 50, 0, Color.RED);
+        Car new2_car = new Car(430, 0, 40, 20, 35, (float) (Math.PI / 2), Color.RED);
+        Car new3_car = new Car(740, 440, 40, 20, 40, (float) Math.PI, Color.RED);
+        cars.add(new1_car);
         cars.add(new2_car);
         cars.add(new3_car);
 
@@ -63,6 +66,7 @@ public class App {
         };
         long[] lastTime = { System.nanoTime() };
         long startTime = System.currentTimeMillis();
+        
         // timer for animation
         Timer timer = new Timer(16, e -> {
             long currentTime = System.nanoTime();
@@ -71,9 +75,9 @@ public class App {
 
             worldTimeElapsed = (int) (System.currentTimeMillis() - startTime);
 
-            for (Car car : cars) {
-                car.move(deltaTime);
-            }
+            // Manages cars
+            carManager(deltaTime, worldTimeElapsed);
+
 
             // i dont like alex // you'll have to deal with it lol
             trafficLights.update();
@@ -87,5 +91,30 @@ public class App {
         frame.setSize(width, height);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
+    }
+
+
+
+    public static void carManager(double deltaTime, float worldTimer) {
+        for (Car car : cars) {
+                car.move(deltaTime);
+        }
+        if (worldTimer - lastCarSpawnTime >= CAR_SPAWN_INTERVAL_MS) {
+            Random rand = new Random();
+            int randomNumber = rand.nextInt(4) + 1; // Generates 0-3, then adds 1
+            //Car newCar = new Car(0, 340, 40, 20, 50, 0, Color.RED); // West lane
+            //Car newCar = new Car(430, 0, 40, 20, 50, (float) (Math.PI / 2), Color.RED); // North lane
+            //Car newCar = new Car(330, 740, 40, 20, 50, (float) (3 * Math.PI / 2), Color.RED); // South lane
+            //Car newCar = new Car(740, 440, 40, 20, 50, (float) Math.PI, Color.RED); // East lane
+            Car newCar = null;
+            switch (randomNumber) {
+                case 1 -> newCar = new Car(0, 340, 40, 20, 50, 0, Color.RED); // West lane
+                case 2 -> newCar = new Car(430, 0, 40, 20, 50, (float) (Math.PI / 2), Color.RED); // North lane
+                case 3 -> newCar = new Car(330, 740, 40, 20, 50, (float) (3 * Math.PI / 2), Color.RED); // South lane
+                case 4 -> newCar = new Car(740, 440, 40, 20, 50, (float) Math.PI, Color.RED); // East lane
+            }
+            cars.add(newCar);
+            lastCarSpawnTime = (int) worldTimer;
+        }
     }
 }

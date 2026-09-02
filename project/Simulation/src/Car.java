@@ -23,7 +23,7 @@ public class Car extends Vehicle {
 
     @Override
     public void move(double deltaSeconds) {
-        System.out.println("Moving car by " + (speed * deltaSeconds) + " pixels" + " at speed " + speed + " pixels/second" + " with deltaSeconds " + deltaSeconds);
+        //System.out.println("Moving car by " + (speed * deltaSeconds) + " pixels" + " at speed " + speed + " pixels/second" + " with deltaSeconds " + deltaSeconds);
         x += (float) (Math.cos(directionRadians) * speed * deltaSeconds);
         y += (float) (Math.sin(directionRadians) * speed * deltaSeconds);
     }
@@ -46,7 +46,9 @@ public class Car extends Vehicle {
     public float getDirectionDegrees() {
         return (float) Math.toDegrees(directionRadians);
     }
-
+    public float getDirectionRadians() {
+        return directionRadians;
+    }
     public void setDirectionRadians(float degrees) {
         this.directionRadians = (float) Math.toRadians(degrees);
     }
