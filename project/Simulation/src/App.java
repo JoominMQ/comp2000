@@ -3,7 +3,6 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
 
-
 public class App {
 
     static int worldTimeElapsed = 0;
@@ -20,9 +19,9 @@ public class App {
 
         // Create car
 
-        Car new_1car = new Car(0, 450, 40, 20, 50, Color.RED);
-        Car new2_car = new Car(0, 390, 40, 20, 25, Color.RED);
-        Car new3_car = new Car(0, 330, 40, 20, 35, Color.RED);
+        Car new_1car = new Car(0, 450, 40, 20, 50, 0, Color.RED);
+        Car new2_car = new Car(500, 40, 40, 20, 25, (float) Math.PI / 2, Color.RED);
+        Car new3_car = new Car(0, 330, 40, 20, 35, 0, Color.RED);
         cars.add(new_1car);
         cars.add(new2_car);
         cars.add(new3_car);
