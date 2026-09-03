@@ -2,11 +2,9 @@
 // -and handles the drawing of the car on the screen.
 
 import java.awt.*;
-import java.awt.geom.*;;
+import java.awt.geom.*;
 
 public class Car extends Vehicle {    
-    private float x;
-    private float y;
     private int radius;
     private int speed;
     private Color color;
@@ -19,9 +17,6 @@ public class Car extends Vehicle {
         if (radius <= 0 || speed < 0) {
             throw new IllegalArgumentException("Radius and speed must be positive values.");
         }
-        
-        this.x = x;
-        this.y = y;
         this.radius = radius;
         this.speed = speed;
         this.color = color;
@@ -36,8 +31,6 @@ public class Car extends Vehicle {
 
     @Override
     public void draw(Graphics g) {
-        checkCollision();
-
         Graphics2D g2d = (Graphics2D) g;
 
         g2d.setColor(color);
@@ -49,14 +42,7 @@ public class Car extends Vehicle {
         g2d.drawLine((int) x, (int) y, (int) endX, (int) endY);
     }
 
-    private void checkCollision() {
-        for (Car other : App.getCars()) {
-            if (other != this && this.isCollidingWithCar(other)) {
-                this.setSpeed(0);
-                return;
-            }
-        }
-    }
+
 
 
 
@@ -91,11 +77,4 @@ public class Car extends Vehicle {
         return acceleration;
     }
 
-
-// Helper methods
-
-    public boolean isCollidingWithCar(Car other) {
-        float distance = this.distanceToVehicle(other);
-        return distance < (this.getRadius() + other.getRadius()); // Check if distance is less than the sum of the radii
-    }
 }

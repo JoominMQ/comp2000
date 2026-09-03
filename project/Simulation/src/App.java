@@ -1,7 +1,4 @@
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 import javax.swing.*;
 
 public class App {
@@ -10,9 +7,7 @@ public class App {
 
     static lightManager trafficLights;
     // Cars List and spawn timer
-    static private List<Car> cars = new ArrayList<>();
-    static private int lastCarSpawnTime = 0;
-    static private final int CAR_SPAWN_INTERVAL_MS = 2000;
+    static private VehicleManager vehicleManager;
 
     public static void main(String[] args) {
 
@@ -20,14 +15,7 @@ public class App {
         int height = 800;
 
         trafficLights = new lightManager();
-
-        // Create cars
-        Car new1_car = new Car(0, 340, 20, 50, 0, Color.MAGENTA);
-        Car new2_car = new Car(450, 0, 20, 35, (float) (Math.PI / 2), Color.MAGENTA);
-        Car new3_car = new Car(740, 440, 20, 40, (float) Math.PI, Color.MAGENTA);
-        cars.add(new1_car);
-        cars.add(new2_car);
-        cars.add(new3_car);
+        vehicleManager = new VehicleManager();
 
         JFrame frame = new JFrame("Traffic Sim");
 
@@ -59,9 +47,7 @@ public class App {
                     40
                 );
 
-                for (Car car : cars) {
-                    car.draw(g);
-                }
+                vehicleManager.draw(g);
             }
         };
         long[] lastTime = { System.nanoTime() };
@@ -76,6 +62,7 @@ public class App {
             worldTimeElapsed = (int) (System.currentTimeMillis() - startTime);
 
             // Manages cars
+            vehicleManager.update(deltaTime, worldTimeElapsed);
             carManager(deltaTime, worldTimeElapsed);
 
 
@@ -96,25 +83,6 @@ public class App {
 
 
     public static void carManager(double deltaTime, float worldTimer) {
-        for (Car car : cars) {
-                car.move(deltaTime);
-        }
-        if (worldTimer - lastCarSpawnTime >= CAR_SPAWN_INTERVAL_MS) {
-            Random rand = new Random();
-            int randomNumber = rand.nextInt(4) + 1; // Generates 0-3, then adds 1
-            Car newCar = null;
-            switch (randomNumber) {
-                case 1 -> newCar = new Car(0, 340, 20, 50, 0, Color.CYAN); // West lane
-                case 2 -> newCar = new Car(450, 0, 20, 50, (float) (Math.PI / 2), Color.CYAN); // North lane
-                case 3 -> newCar = new Car(350, 740, 20, 50, (float) (3 * Math.PI / 2), Color.CYAN); // South lane
-                case 4 -> newCar = new Car(740, 440, 20, 50, (float) Math.PI, Color.CYAN); // East lane
-            }
-            cars.add(newCar);
-            lastCarSpawnTime = (int) worldTimer;
-        }
-    }
-
-    public static List<Car> getCars() {
-        return cars;
+        
     }
 }
