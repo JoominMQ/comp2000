@@ -10,9 +10,9 @@ public class App {
 
     static lightManager trafficLights;
     // Cars List and spawn timer
-    static List<Car> cars = new ArrayList<>();
-    static int lastCarSpawnTime = 0;
-    static final int CAR_SPAWN_INTERVAL_MS = 2000;
+    static private List<Car> cars = new ArrayList<>();
+    static private int lastCarSpawnTime = 0;
+    static private final int CAR_SPAWN_INTERVAL_MS = 2000;
 
     public static void main(String[] args) {
 
@@ -22,9 +22,9 @@ public class App {
         trafficLights = new lightManager();
 
         // Create cars
-        Car new1_car = new Car(0, 340, 40, 20, 50, 0, Color.RED);
-        Car new2_car = new Car(430, 0, 40, 20, 35, (float) (Math.PI / 2), Color.RED);
-        Car new3_car = new Car(740, 440, 40, 20, 40, (float) Math.PI, Color.RED);
+        Car new1_car = new Car(0, 340, 20, 50, 0, Color.MAGENTA);
+        Car new2_car = new Car(450, 0, 20, 35, (float) (Math.PI / 2), Color.MAGENTA);
+        Car new3_car = new Car(740, 440, 20, 40, (float) Math.PI, Color.MAGENTA);
         cars.add(new1_car);
         cars.add(new2_car);
         cars.add(new3_car);
@@ -102,19 +102,19 @@ public class App {
         if (worldTimer - lastCarSpawnTime >= CAR_SPAWN_INTERVAL_MS) {
             Random rand = new Random();
             int randomNumber = rand.nextInt(4) + 1; // Generates 0-3, then adds 1
-            //Car newCar = new Car(0, 340, 40, 20, 50, 0, Color.RED); // West lane
-            //Car newCar = new Car(430, 0, 40, 20, 50, (float) (Math.PI / 2), Color.RED); // North lane
-            //Car newCar = new Car(330, 740, 40, 20, 50, (float) (3 * Math.PI / 2), Color.RED); // South lane
-            //Car newCar = new Car(740, 440, 40, 20, 50, (float) Math.PI, Color.RED); // East lane
             Car newCar = null;
             switch (randomNumber) {
-                case 1 -> newCar = new Car(0, 340, 40, 20, 50, 0, Color.RED); // West lane
-                case 2 -> newCar = new Car(430, 0, 40, 20, 50, (float) (Math.PI / 2), Color.RED); // North lane
-                case 3 -> newCar = new Car(330, 740, 40, 20, 50, (float) (3 * Math.PI / 2), Color.RED); // South lane
-                case 4 -> newCar = new Car(740, 440, 40, 20, 50, (float) Math.PI, Color.RED); // East lane
+                case 1 -> newCar = new Car(0, 340, 20, 50, 0, Color.CYAN); // West lane
+                case 2 -> newCar = new Car(450, 0, 20, 50, (float) (Math.PI / 2), Color.CYAN); // North lane
+                case 3 -> newCar = new Car(350, 740, 20, 50, (float) (3 * Math.PI / 2), Color.CYAN); // South lane
+                case 4 -> newCar = new Car(740, 440, 20, 50, (float) Math.PI, Color.CYAN); // East lane
             }
             cars.add(newCar);
             lastCarSpawnTime = (int) worldTimer;
         }
+    }
+
+    public static List<Car> getCars() {
+        return cars;
     }
 }

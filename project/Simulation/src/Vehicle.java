@@ -16,4 +16,12 @@ public abstract class Vehicle {
     public float[] getPosition() {
         return new float[]{x, y};
     }
+
+
+    public float distanceToVehicle(Vehicle other) {
+        float dx = this.x - other.x;
+        float dy = this.y - other.y;
+        return (float) Math.sqrt(dx * dx + dy * dy);
+    }
+
 }
