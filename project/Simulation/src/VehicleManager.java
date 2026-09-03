@@ -11,15 +11,15 @@ import java.util.Random;
 public class VehicleManager {
     private List<Car> vehicles;
     static private int lastCarSpawnTime = 0;
-    static private final int CAR_SPAWN_INTERVAL_MS = 2000;
+    static private final int CAR_SPAWN_INTERVAL_MS = 500;
 
 
     public VehicleManager() {
         vehicles = new ArrayList<>();
         // Create cars
-        Car new1_car = new Car(0, 340, 20, 50, 0, Color.MAGENTA);
-        Car new2_car = new Car(450, 0, 20, 35, (float) (Math.PI / 2), Color.MAGENTA);
-        Car new3_car = new Car(740, 440, 20, 40, (float) Math.PI, Color.MAGENTA);
+        Car new1_car = new Car(0, 340, 40, 50, 0, Color.MAGENTA);
+        Car new2_car = new Car(450, 0, 30, 30, (float) (Math.PI / 2), Color.MAGENTA);
+        Car new3_car = new Car(740, 440, 10, 40, (float) Math.PI, Color.MAGENTA);
         vehicles.add(new1_car);
         vehicles.add(new2_car);
         vehicles.add(new3_car);
@@ -96,8 +96,45 @@ public class VehicleManager {
 
     private void handleCollision(Car car1, Car car2) {
         // Stop both cars
-        car1.setSpeed(20);
-        car2.setSpeed(20);
+        float dx = car2.getPosition()[0] - car1.getPosition()[0];
+        float dy = car2.getPosition()[1] - car1.getPosition()[1];
+        float distance = (float) Math.sqrt(dx * dx + dy * dy);
+        if (distance == 0f) distance = 0.01f; // guard against exactly-overlapping centers
+
+        float nx = dx / distance; // unit vector pointing from a to b
+        float ny = dy / distance;
+
+        float relVx = car1.getVelocityX() - car2.getVelocityX();
+        float relVy = car1.getVelocityY() - car2.getVelocityY();
+        float velAlongNormal = relVx * nx + relVy * ny;
+
+        if (velAlongNormal < 0) return; // already separating, nothing to resolve
+
+        float restitution = 0.8f; // 1 = bounces apart fully, 0 = cars just stop against each other
+        float impulse = -(1 + restitution) * velAlongNormal
+                / (1f / car1.getMass() + 1f / car2.getMass());
+
+        float impulseX = impulse * nx;
+        float impulseY = impulse * ny;
+
+        car1.setVelocity(car1.getVelocityX() + impulseX / car1.getMass(), car1.getVelocityY() + impulseY / car1.getMass());
+        car2.setVelocity(car2.getVelocityX() - impulseX / car2.getMass(), car2.getVelocityY() - impulseY / car2.getMass());
+
+        separateOverlap(car1, car2, nx, ny, distance);
     }
 
+    private void separateOverlap(Car a, Car b, float nx, float ny, float distance) {
+        float overlap = (a.getRadius() + b.getRadius()) - distance;
+        if (overlap <= 0) return;
+
+        //float totalMass = a.getMass() + b.getMass();
+        //float pushA = overlap * (b.getMass() / totalMass); // lighter side moves further
+        //float pushB = overlap * (a.getMass() / totalMass);
+
+        //a.setPosition(a.getPosition()[0] - nx * pushA, a.getPosition()[1] - ny * pushA);
+        //b.setPosition(b.getPosition()[0] + nx * pushB, b.getPosition()[1] + ny * pushB);
+
+        a.setPosition(a.getPosition()[0] - nx * overlap / 1000, a.getPosition()[1] - ny * overlap / 1000);
+        b.setPosition(b.getPosition()[0] + nx * overlap / 1000, b.getPosition()[1] + ny * overlap / 1000);
+    }
 }

@@ -6,12 +6,12 @@ import java.awt.geom.*;
 
 public class Car extends Vehicle {    
     private int radius;
-    private int speed;
+    private float speed;
     private Color color;
-    private  float directionRadians;  // 0 = facing +x, increases counter-clockwise
+    private float directionRadians;  // 0 = facing +x, increases counter-clockwise
     private float acceleration = 0; // accel and decel, pixels per second squared
 
-    public Car(int x, int y, int radius, int speed, float directionRadians, Color color) {
+    public Car(int x, int y, int radius, float speed, float directionRadians, Color color) {
         super(x, y);
 
         if (radius <= 0 || speed < 0) {
@@ -46,7 +46,13 @@ public class Car extends Vehicle {
 
 
 
+
 // Getters and Setters
+
+    @Override
+    public float getMass() {
+        return radius * 10; // Arbitrary mass based on size
+    }
 
     public float getDirectionDegrees() {
         return (float) Math.toDegrees(directionRadians);
@@ -54,27 +60,45 @@ public class Car extends Vehicle {
     public float getDirectionRadians() {
         return directionRadians;
     }
-    public void setDirectionRadians(float degrees) {
+    public void setDirectionRadians(float radians) {
+        this.directionRadians = radians;
+    }
+    public void setDirectionDegrees(float degrees) {
         this.directionRadians = (float) Math.toRadians(degrees);
+    }
+    public void turnDirection(float degrees) {
+        directionRadians += Math.toRadians(degrees);
     }
 
     public int getRadius() {
         return radius;
     }
     
-    public int getSpeed() {
+    public float getSpeed() {
         return speed;
     }
 
-    public void setSpeed(int speed) {
+    public void setSpeed(float speed) {
         if (speed < 0) {
             throw new IllegalArgumentException("Speed must be a non-negative value.");
         }
         this.speed = speed;
     }
+    public float getVelocityX() {
+        return (float) (Math.cos(directionRadians) * speed);
+    }
+    public float getVelocityY() {
+        return (float) (Math.sin(directionRadians) * speed);
+    }
+    public void setVelocity(float vx, float vy) {
+        this.speed = (float) Math.sqrt(vx * vx + vy * vy);
+        this.directionRadians = (float) Math.atan2(vy, vx);
+    }
 
     public float getAcceleration() {
         return acceleration;
     }
+
+
 
 }
