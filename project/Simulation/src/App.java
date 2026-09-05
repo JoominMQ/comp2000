@@ -4,7 +4,7 @@ import javax.swing.*;
 public class App {
 
     static float worldTimeElapsed = 0;
-
+    static boolean paused = false;
     static lightManager trafficLights;
     // Cars List and spawn timer
     static private VehicleManager vehicleManager;
@@ -48,8 +48,11 @@ public class App {
                 );
 
                 vehicleManager.draw(g);
+                
             }
         };
+        pauseButtonSetup(frame, panel);
+
         long[] lastTime = { System.nanoTime() };
         long startTime = System.currentTimeMillis();
         
@@ -61,10 +64,12 @@ public class App {
 
             worldTimeElapsed = (int) (System.currentTimeMillis() - startTime);
 
+            if (paused) {
+                return; // Skip updating if paused
+            }
+
             // Manages cars
             vehicleManager.update(deltaTime, worldTimeElapsed);
-            carManager(deltaTime, worldTimeElapsed);
-
 
             // i dont like alex // you'll have to deal with it lol
             trafficLights.update();
@@ -82,7 +87,27 @@ public class App {
 
 
 
-    public static void carManager(double deltaTime, float worldTimer) {
-        
+    public static void pauseButtonSetup(JFrame frame, JPanel panel) {
+    frame.add(panel);
+    
+    // make overlay
+    panel.setLayout(new GridBagLayout());
+    
+    // make pause button
+    JButton pauseButton = new JButton("Pause");
+    pauseButton.addActionListener(e -> {
+        paused = !paused;
+        pauseButton.setText(paused ? "Resume" : "Pause");
+        panel.repaint();
+    });
+
+    // make bottom-left corner
+    GridBagConstraints gbc = new GridBagConstraints();
+    gbc.weightx = 1.0;
+    gbc.weighty = 1.0;
+    gbc.anchor = GridBagConstraints.SOUTHWEST;
+    gbc.insets = new Insets(10, 10, 10, 10); // 10px margin from bottom-left edges
+
+    panel.add(pauseButton, gbc);
     }
 }
