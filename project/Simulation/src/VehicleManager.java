@@ -11,7 +11,7 @@ import java.util.Random;
 public class VehicleManager {
     private List<Car> vehicles;
     static private int lastCarSpawnTime = 0;
-    static private final int CAR_SPAWN_INTERVAL_MS = 500;
+    static private final int CAR_SPAWN_INTERVAL_MS = 1500;
 
 
     public VehicleManager() {
