@@ -143,4 +143,9 @@ public class LightManager {
     public int getState() {
         return state;
     }
+
+
+    public ArrayList<Lights> getLights() {
+        return lights;
+    }
 }

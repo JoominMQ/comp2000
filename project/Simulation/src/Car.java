@@ -42,6 +42,10 @@ public class Car extends Vehicle {
         g2d.drawLine((int) x, (int) y, (int) endX, (int) endY);
     }
 
+    public void shouldStopAtLight(){
+        setSpeed(0);
+    }
+
 
 
 

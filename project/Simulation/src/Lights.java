@@ -39,6 +39,22 @@ public class Lights extends Objects {
     public int getColour() {
         return colourMode;
     }
+    public boolean isGreen() {
+        return colourMode == 1;
+    }
+    public boolean isYellow() {
+        return colourMode == 2;
+    }
+    public boolean isRed() {
+        return colourMode == 3;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+    public int getHeight() {
+        return height;
+    }
 
 
 }

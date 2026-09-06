@@ -12,9 +12,10 @@ public class VehicleManager {
     private List<Car> vehicles;
     static private int lastCarSpawnTime = 0;
     static private final int CAR_SPAWN_INTERVAL_MS = 1500;
+    private final LightManager trafficLights;
 
-
-    public VehicleManager() {
+    public VehicleManager(LightManager trafficLights) {
+        this.trafficLights = trafficLights;
         vehicles = new ArrayList<>();
         // Create cars
         Car new1_car = new Car(0, 340, 40, 50, 0, Color.MAGENTA);
@@ -31,7 +32,8 @@ public class VehicleManager {
     public void update(double deltaTime, float worldTimer) {
         // Move all vehicles
         for (Vehicle car : vehicles) {
-                car.move(deltaTime);
+            if (shouldStopFor((Car) car)) {((Car) car).shouldStopAtLight();}
+            car.move(deltaTime);
         }
         // Spawn new cars at intervals
         if (worldTimer - lastCarSpawnTime >= CAR_SPAWN_INTERVAL_MS) {
@@ -49,7 +51,9 @@ public class VehicleManager {
         }
         // Check for collisions between vehicles
         checkCollisions();
+        
     }
+
 
     public void draw(Graphics g) {
         for (Car car : vehicles) {
@@ -136,5 +140,49 @@ public class VehicleManager {
 
         a.setPosition(a.getPosition()[0] - nx * overlap / 1000, a.getPosition()[1] - ny * overlap / 1000);
         b.setPosition(b.getPosition()[0] + nx * overlap / 1000, b.getPosition()[1] + ny * overlap / 1000);
+    }
+
+    
+
+    public boolean shouldStopFor(Car car) {
+        float EPSILON = 0.01f;
+
+        float[] pos = car.getPosition();
+        float carX = pos[0];
+        float carY = pos[1];
+        float radius = car.getRadius();
+
+        Lights lightLeft = trafficLights.getLights().get(0);
+        Lights lightRight = trafficLights.getLights().get(1);
+        Lights lightTop = trafficLights.getLights().get(2);
+        Lights lightBottom = trafficLights.getLights().get(3);
+
+        // normalize to [0, 2π) in case direction is ever negative
+        float dir = (car.getDirectionRadians() % (float) (2 * Math.PI) + (float) (2 * Math.PI)) % (float) (2 * Math.PI);
+
+        if (Math.abs(dir - 0) < EPSILON) { // eastbound, governed by lightLeft
+            return lightLeft.getColour() == 3
+                    && (carX + radius) >= lightLeft.getX()
+                    && carX < lightLeft.getX();
+
+        } else if (Math.abs(dir - (float) (Math.PI / 2)) < EPSILON) { // southbound, lightTop
+            return lightTop.getColour() == 3
+                    && (carY + radius) >= lightTop.getY()
+                    && carY < lightTop.getY();
+
+        } else if (Math.abs(dir - (float) Math.PI) < EPSILON) { // westbound, lightRight
+            float stopLine = lightRight.getX() + lightRight.getWidth();
+            return lightRight.getColour() == 3
+                    && (carX - radius) <= stopLine
+                    && carX > stopLine;
+
+        } else if (Math.abs(dir - (float) (3 * Math.PI / 2)) < EPSILON) { // northbound, lightBottom
+            float stopLine = lightBottom.getY() + lightBottom.getHeight();
+            return lightBottom.getColour() == 3
+                    && (carY - radius) <= stopLine
+                    && carY > stopLine;
+        }
+
+        return false; // unrecognized direction
     }
 }

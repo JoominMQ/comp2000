@@ -18,7 +18,7 @@ public class App {
         int height = 800;
 
         trafficLights = new LightManager();
-        vehicleManager = new VehicleManager();
+        vehicleManager = new VehicleManager(trafficLights);
 
         JFrame frame = new JFrame("Traffic Sim");
 
