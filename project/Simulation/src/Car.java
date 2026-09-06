@@ -9,7 +9,7 @@ public class Car extends Vehicle {
     private float speed;
     private Color color;
     private float directionRadians;  // 0 = facing +x, increases counter-clockwise
-    private float acceleration = 0; // accel and decel, pixels per second squared
+    private float acceleration = 40; // accel and decel, pixels per second squared
 
     public Car(int x, int y, int radius, float speed, float directionRadians, Color color) {
         super(x, y);
@@ -17,6 +17,7 @@ public class Car extends Vehicle {
         if (radius <= 0 || speed < 0) {
             throw new IllegalArgumentException("Radius and speed must be positive values.");
         }
+        this.acceleration = 40 * (20/radius); // Adjust acceleration based on size
         this.radius = radius;
         this.speed = speed;
         this.color = color;
@@ -83,7 +84,7 @@ public class Car extends Vehicle {
     }
 
     public void setSpeed(float speed) {
-        if (speed < 0) {
+       if (speed < 0) {
             throw new IllegalArgumentException("Speed must be a non-negative value.");
         }
         this.speed = speed;
@@ -102,7 +103,18 @@ public class Car extends Vehicle {
     public float getAcceleration() {
         return acceleration;
     }
-
-
+    public void speedUp(double deltaSeconds) {
+        float speedlimit = 100; // max speed limit
+        speed += acceleration * deltaSeconds;
+        if (speed > speedlimit) { 
+            speed = speedlimit;
+        }
+    }
+    public void slowDown(double deltaSeconds) {
+        speed -= acceleration * deltaSeconds;
+        if (speed < 0) {
+            speed = 0;
+        }
+    }
 
 }

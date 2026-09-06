@@ -144,8 +144,10 @@ public class LightManager {
         return state;
     }
 
-
-    public ArrayList<Lights> getLights() {
-        return lights;
+    public Lights getLight(int index) {
+        if (index < 0 || index >= lights.size()) {
+            throw new IndexOutOfBoundsException("Invalid light index");
+        }
+        return lights.get(index);
     }
 }

@@ -12,7 +12,7 @@ public class VehicleManager {
     private List<Car> vehicles;
     static private int lastCarSpawnTime = 0;
     static private final int CAR_SPAWN_INTERVAL_MS = 1500;
-    private final LightManager trafficLights;
+    private LightManager trafficLights;
 
     public VehicleManager(LightManager trafficLights) {
         this.trafficLights = trafficLights;
@@ -32,7 +32,7 @@ public class VehicleManager {
     public void update(double deltaTime, float worldTimer) {
         // Move all vehicles
         for (Vehicle car : vehicles) {
-            if (shouldStopFor((Car) car)) {((Car) car).shouldStopAtLight();}
+            if (shouldStopFor((Car) car)) {((Car) car).shouldStopAtLight();} else {((Car) car).speedUp(deltaTime);;}
             car.move(deltaTime);
         }
         // Spawn new cars at intervals
@@ -92,9 +92,9 @@ public class VehicleManager {
                     break; // Exit the inner loop if a collision is detected
                 }
             }
-            if (!collisionDetected) {
-                car1.setSpeed(50); // Reset speed to normal if no collision
-            }
+            //if (!collisionDetected) {
+            //    car1.setSpeed(50); // Reset speed to normal if no collision
+            //}
         }
     }
 
@@ -145,17 +145,17 @@ public class VehicleManager {
     
 
     public boolean shouldStopFor(Car car) {
-        float EPSILON = 0.01f;
+        float EPSILON = 0.10f;
 
         float[] pos = car.getPosition();
         float carX = pos[0];
         float carY = pos[1];
         float radius = car.getRadius();
 
-        Lights lightLeft = trafficLights.getLights().get(0);
-        Lights lightRight = trafficLights.getLights().get(1);
-        Lights lightTop = trafficLights.getLights().get(2);
-        Lights lightBottom = trafficLights.getLights().get(3);
+        Lights lightLeft = trafficLights.getLight(0);
+        Lights lightRight = trafficLights.getLight(1);
+        Lights lightTop = trafficLights.getLight(2);
+        Lights lightBottom = trafficLights.getLight(3);
 
         // normalize to [0, 2π) in case direction is ever negative
         float dir = (car.getDirectionRadians() % (float) (2 * Math.PI) + (float) (2 * Math.PI)) % (float) (2 * Math.PI);
