@@ -1,11 +1,14 @@
 import java.awt.*;
 import javax.swing.*;
 
+
+
+
 public class App {
 
     static float worldTimeElapsed = 0;
 
-    static lightManager trafficLights;
+    static LightManager trafficLights;
     // Cars List and spawn timer
     static private VehicleManager vehicleManager;
 
@@ -14,7 +17,7 @@ public class App {
         int width = 800;
         int height = 800;
 
-        trafficLights = new lightManager();
+        trafficLights = new LightManager();
         vehicleManager = new VehicleManager();
 
         JFrame frame = new JFrame("Traffic Sim");
