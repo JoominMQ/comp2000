@@ -18,9 +18,9 @@ public class VehicleManager {
         this.trafficLights = trafficLights;
         vehicles = new ArrayList<>();
         // Create cars
-        Car new1_car = new Car(0, 340, 40, 50, 0, Color.MAGENTA);
-        Car new2_car = new Car(450, 0, 30, 30, (float) (Math.PI / 2), Color.MAGENTA);
-        Car new3_car = new Car(740, 440, 10, 40, (float) Math.PI, Color.MAGENTA);
+        Car new1_car = new Car(0, 340, 40f, 50f, 0f, Color.MAGENTA);
+        Car new2_car = new Car(450, 0, 30f, 30f, (float) (Math.PI / 2), Color.MAGENTA);
+        Car new3_car = new Car(740, 440, 10f, 40f, (float) Math.PI, Color.MAGENTA);
         vehicles.add(new1_car);
         vehicles.add(new2_car);
         vehicles.add(new3_car);
@@ -32,7 +32,11 @@ public class VehicleManager {
     public void update(double deltaTime, float worldTimer) {
         // Move all vehicles
         for (Vehicle car : vehicles) {
-            if (shouldStopFor((Car) car)) {((Car) car).shouldStopAtLight();} else {((Car) car).speedUp(deltaTime);;}
+            if (shouldStopFor2((Car) car) || tooCloseToCarAhead((Car) car)) {
+                ((Car) car).slowDown(deltaTime);
+            } else {
+                ((Car) car).speedUp(deltaTime);
+            }
             car.move(deltaTime);
         }
         // Spawn new cars at intervals
@@ -114,7 +118,7 @@ public class VehicleManager {
 
         if (velAlongNormal < 0) return; // already separating, nothing to resolve
 
-        float restitution = 0.8f; // 1 = bounces apart fully, 0 = cars just stop against each other
+        float restitution = 0.4f; // 1 = bounces apart fully, 0 = cars just stop against each other
         float impulse = -(1 + restitution) * velAlongNormal
                 / (1f / car1.getMass() + 1f / car2.getMass());
 
@@ -144,45 +148,97 @@ public class VehicleManager {
 
     
 
-    public boolean shouldStopFor(Car car) {
-        float EPSILON = 0.10f;
 
+    public boolean shouldStopFor2(Car car) {
+        float STOP_LINE_BUFFER = 10f; // standoff so the car doesn't hug the light
+        Lights light = getGoverningLight(car);
+        if (light == null || light.getColour() != 3) return false; // not red
+
+        float distance = distanceToStopLine(car, light);
+        if (distance < 0) return false;
+        float brakingDistance = getStoppingDistance(car) + STOP_LINE_BUFFER;
+
+        return distance <= brakingDistance;
+    }
+
+    private Lights getGoverningLight(Car car) {
+        float EPSILON = 0.01f; // small threshold for floating-point comparison
+        float dir = normalizeAngle(car.getDirectionRadians());
+        if (Math.abs(dir - 0) < EPSILON) return trafficLights.getLightLeft();
+        if (Math.abs(dir - (float) (Math.PI / 2)) < EPSILON) return trafficLights.getLightTop();
+        if (Math.abs(dir - (float) Math.PI) < EPSILON) return trafficLights.getLightRight();
+        if (Math.abs(dir - (float) (3 * Math.PI / 2)) < EPSILON) return trafficLights.getLightBottom();
+        return null;
+    }
+
+    private float distanceToStopLine(Car car, Lights light) {
+        float EPSILON = 0.01f; // small threshold for floating-point comparison
         float[] pos = car.getPosition();
-        float carX = pos[0];
-        float carY = pos[1];
-        float radius = car.getRadius();
+        float dir = normalizeAngle(car.getDirectionRadians());
 
-        Lights lightLeft = trafficLights.getLight(0);
-        Lights lightRight = trafficLights.getLight(1);
-        Lights lightTop = trafficLights.getLight(2);
-        Lights lightBottom = trafficLights.getLight(3);
-
-        // normalize to [0, 2π) in case direction is ever negative
-        float dir = (car.getDirectionRadians() % (float) (2 * Math.PI) + (float) (2 * Math.PI)) % (float) (2 * Math.PI);
-
-        if (Math.abs(dir - 0) < EPSILON) { // eastbound, governed by lightLeft
-            return lightLeft.getColour() == 3
-                    && (carX + radius) >= lightLeft.getX()
-                    && carX < lightLeft.getX();
-
-        } else if (Math.abs(dir - (float) (Math.PI / 2)) < EPSILON) { // southbound, lightTop
-            return lightTop.getColour() == 3
-                    && (carY + radius) >= lightTop.getY()
-                    && carY < lightTop.getY();
-
-        } else if (Math.abs(dir - (float) Math.PI) < EPSILON) { // westbound, lightRight
-            float stopLine = lightRight.getX() + lightRight.getWidth();
-            return lightRight.getColour() == 3
-                    && (carX - radius) <= stopLine
-                    && carX > stopLine;
-
-        } else if (Math.abs(dir - (float) (3 * Math.PI / 2)) < EPSILON) { // northbound, lightBottom
-            float stopLine = lightBottom.getY() + lightBottom.getHeight();
-            return lightBottom.getColour() == 3
-                    && (carY - radius) <= stopLine
-                    && carY > stopLine;
+        if (Math.abs(dir - 0) < EPSILON) {                             // eastbound
+            return light.getX() - (pos[0] + car.getRadius());
+        } else if (Math.abs(dir - (float) (Math.PI / 2)) < EPSILON) {  // southbound
+            return light.getY() - (pos[1] + car.getRadius());
+        } else if (Math.abs(dir - (float) Math.PI) < EPSILON) {        // westbound
+            return (pos[0] - car.getRadius()) - (light.getX() + light.getWidth());
+        } else {                                                        // northbound
+            return (pos[1] - car.getRadius()) - (light.getY() + light.getHeight());
         }
+    }
 
-        return false; // unrecognized direction
+    private float normalizeAngle(float angle) {
+        float twoPi = (float) (2 * Math.PI);
+        return ((angle % twoPi) + twoPi) % twoPi;
+    }
+
+
+
+
+
+    private Car findCarAhead(Car car) {
+        float[] pos = car.getPosition();
+        float dir = car.getDirectionRadians();
+        Car closest = null;
+        float closestDistance = Float.MAX_VALUE;
+
+        for (Car other : vehicles) {
+            if (other == car || other.getDirectionRadians() != dir) continue;
+
+            float[] otherPos = other.getPosition();
+            float dx = otherPos[0] - pos[0];
+            float dy = otherPos[1] - pos[1];
+            float forwardDistance = dx * (float) Math.cos(dir) + dy * (float) Math.sin(dir);
+
+            if (forwardDistance > 0 && forwardDistance < closestDistance) {
+                closestDistance = forwardDistance;
+                closest = other;
+            }
+        }
+        return closest;
+    }
+
+    private boolean tooCloseToCarAhead(Car car) {
+        //float TIME_HEADWAY = 0.8f; // seconds of following distance per unit speed
+        float BASE_GAP = 20f;      // minimum gap when both are stopped
+        
+        Car ahead = findCarAhead(car);
+        if (ahead == null) return false;
+        double distance = getDistance(car.getPosition()[0], car.getPosition()[1], ahead.getPosition()[0], ahead.getPosition()[1]);
+        float gap = (float) distance - car.getRadius() - ahead.getRadius();
+        float desiredGap = getStoppingDistance(car) + BASE_GAP;
+        return gap < desiredGap;
+    }
+
+    public float getStoppingDistance(Car car) {
+        float speed = car.getSpeed();
+        float acceleration = car.getAcceleration();
+        return (speed * speed) / (2 * acceleration);
+    }
+
+    public static double getDistance(double x1, double y1, double x2, double y2) {
+        double dx = x2 - x1;
+        double dy = y2 - y1;
+        return Math.hypot(dx, dy);
     }
 }

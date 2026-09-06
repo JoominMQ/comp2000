@@ -5,13 +5,13 @@ import java.awt.*;
 import java.awt.geom.*;
 
 public class Car extends Vehicle {    
-    private int radius;
+    private float radius;
     private float speed;
     private Color color;
     private float directionRadians;  // 0 = facing +x, increases counter-clockwise
-    private float acceleration = 40; // accel and decel, pixels per second squared
+    private final float acceleration; // accel and decel, pixels per second squared
 
-    public Car(int x, int y, int radius, float speed, float directionRadians, Color color) {
+    public Car(int x, int y, float radius, float speed, float directionRadians, Color color) {
         super(x, y);
 
         if (radius <= 0 || speed < 0) {
@@ -43,8 +43,8 @@ public class Car extends Vehicle {
         g2d.drawLine((int) x, (int) y, (int) endX, (int) endY);
     }
 
-    public void shouldStopAtLight(){
-        setSpeed(0);
+    public void shouldStopAtLight(double deltaSeconds) {
+        slowDown(deltaSeconds);
     }
 
 
@@ -75,7 +75,7 @@ public class Car extends Vehicle {
         directionRadians += Math.toRadians(degrees);
     }
 
-    public int getRadius() {
+    public float getRadius() {
         return radius;
     }
     

@@ -144,10 +144,16 @@ public class LightManager {
         return state;
     }
 
-    public Lights getLight(int index) {
-        if (index < 0 || index >= lights.size()) {
-            throw new IndexOutOfBoundsException("Invalid light index");
-        }
-        return lights.get(index);
+    public Lights getLightLeft() {
+        return lights.get(0);
+    }
+    public Lights getLightRight() {
+        return lights.get(1);
+    }
+    public Lights getLightTop() {
+        return lights.get(2);
+    }
+    public Lights getLightBottom() {
+        return lights.get(3);
     }
 }
