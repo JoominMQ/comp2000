@@ -7,9 +7,7 @@ public class App {
     static boolean paused = false;
 
     static LightManager trafficLights;
-
     static private VehicleManager vehicleManager;
-
     static private PedestrianManager pedestrianManager;
 
     public static void main(String[] args) {
@@ -19,249 +17,96 @@ public class App {
 
         trafficLights = new LightManager();
 
-        vehicleManager =
-                new VehicleManager(
-                        trafficLights
-                );
+        vehicleManager = new VehicleManager(trafficLights);
 
-        pedestrianManager =
-                new PedestrianManager(
-                        trafficLights,
-                        vehicleManager
-                );
+        pedestrianManager = new PedestrianManager(trafficLights, vehicleManager);
 
-        JFrame frame =
-                new JFrame("Traffic Sim");
+        JFrame frame = new JFrame("Traffic Sim");
 
-        JPanel panel =
-                new JPanel() {
+        JPanel panel = new JPanel() {
 
-                    @Override
-                    protected void paintComponent(
-                            Graphics g) {
+            @Override
+            protected void paintComponent(Graphics g) {
 
-                        super.paintComponent(g);
+                super.paintComponent(g);
 
-                        // -----------------------------
-                        // ROADS
-                        // -----------------------------
+                g.setColor(Color.GRAY);
+                g.fillRect(0, 300, width, 200);
+                g.fillRect(300, 0, 200, height);
 
-                        g.setColor(Color.GRAY);
+                g.setColor(Color.BLACK);
+                g.drawLine(0, height / 2, width, height / 2);
+                g.drawLine(width / 2, 0, width / 2, height);
 
-                        // Horizontal road
-                        g.fillRect(
-                                0,
-                                300,
-                                width,
-                                200
-                        );
+                trafficLights.draw(g);
 
-                        // Vertical road
-                        g.fillRect(
-                                300,
-                                0,
-                                200,
-                                height
-                        );
+                g.setColor(Color.BLACK);
+                g.setFont(new Font("Arial", Font.BOLD, 30));
+                g.drawString("Time elapsed: " + worldTimeElapsed / 1000 + "s", 20, 40);
 
-                        // -----------------------------
-                        // ROAD DIVIDING LINES
-                        // -----------------------------
-
-                        g.setColor(Color.BLACK);
-
-                        g.drawLine(
-                                0,
-                                height / 2,
-                                width,
-                                height / 2
-                        );
-
-                        g.drawLine(
-                                width / 2,
-                                0,
-                                width / 2,
-                                height
-                        );
-
-                        // -----------------------------
-                        // TRAFFIC LIGHTS
-                        // -----------------------------
-
-                        trafficLights.draw(g);
-
-                        // -----------------------------
-                        // TIME
-                        // -----------------------------
-
-                        g.setColor(Color.BLACK);
-
-                        g.setFont(
-                                new Font(
-                                        "Arial",
-                                        Font.BOLD,
-                                        30
-                                )
-                        );
-
-                        g.drawString(
-                                "Time elapsed: "
-                                        + worldTimeElapsed / 1000
-                                        + "s",
-                                20,
-                                40
-                        );
-
-                        // -----------------------------
-                        // CARS
-                        // -----------------------------
-
-                        vehicleManager.draw(g);
-
-                        // -----------------------------
-                        // PEDESTRIANS
-                        // -----------------------------
-
-                        pedestrianManager.draw(g);
-                    }
-                };
-
-        pauseButtonSetup(
-                frame,
-                panel
-        );
-
-        long[] lastTime = {
-                System.nanoTime()
+                vehicleManager.draw(g);
+                pedestrianManager.draw(g);
+            }
         };
 
-        long startTime =
-                System.currentTimeMillis();
+        pauseButtonSetup(frame, panel);
 
-        // -----------------------------
-        // ANIMATION TIMER
-        // -----------------------------
+        long[] lastTime = {System.nanoTime()};
+        long startTime = System.currentTimeMillis();
 
-        Timer timer =
-                new Timer(
-                        16,
-                        e -> {
+        Timer timer = new Timer(16, e -> {
 
-                            long currentTime =
-                                    System.nanoTime();
+            long currentTime = System.nanoTime();
 
-                            double deltaTime =
-                                    (
-                                            currentTime
-                                                    - lastTime[0]
-                                    )
-                                            / 1_000_000_000.0;
+            double deltaTime = (currentTime - lastTime[0]) / 1_000_000_000.0;
 
-                            lastTime[0] =
-                                    currentTime;
+            lastTime[0] = currentTime;
 
-                            worldTimeElapsed =
-                                    (int) (
-                                            System.currentTimeMillis()
-                                                    - startTime
-                                    );
+            worldTimeElapsed = (int) (System.currentTimeMillis() - startTime);
 
-                            if (paused) {
-                                return;
-                            }
+            if (paused) {
+                return;
+            }
 
-                            // -----------------------------
-                            // UPDATE CARS
-                            // -----------------------------
+            vehicleManager.update(deltaTime, worldTimeElapsed);
+            trafficLights.update();
+            pedestrianManager.update(deltaTime, worldTimeElapsed);
 
-                            vehicleManager.update(
-                                    deltaTime,
-                                    worldTimeElapsed
-                            );
-
-                            // -----------------------------
-                            // UPDATE LIGHTS
-                            // -----------------------------
-
-                            trafficLights.update();
-
-                            // -----------------------------
-                            // UPDATE PEDESTRIANS
-                            // -----------------------------
-
-                            pedestrianManager.update(
-                                    deltaTime,
-                                    worldTimeElapsed
-                            );
-
-                            panel.repaint();
-                        }
-                );
+            panel.repaint();
+        });
 
         timer.start();
 
         frame.add(panel);
-
-        frame.setSize(
-                width,
-                height
-        );
-
-        frame.setDefaultCloseOperation(
-                JFrame.EXIT_ON_CLOSE
-        );
-
+        frame.setSize(width, height);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
     }
 
-    public static void pauseButtonSetup(
-            JFrame frame,
-            JPanel panel) {
+    public static void pauseButtonSetup(JFrame frame, JPanel panel) {
 
         frame.add(panel);
 
-        panel.setLayout(
-                new GridBagLayout()
-        );
+        panel.setLayout(new GridBagLayout());
 
-        JButton pauseButton =
-                new JButton("Pause");
+        JButton pauseButton = new JButton("Pause");
 
-        pauseButton.addActionListener(
-                e -> {
+        pauseButton.addActionListener(e -> {
 
-                    paused = !paused;
+            paused = !paused;
 
-                    pauseButton.setText(
-                            paused
-                                    ? "Resume"
-                                    : "Pause"
-                    );
+            pauseButton.setText(paused ? "Resume" : "Pause");
 
-                    panel.repaint();
-                }
-        );
+            panel.repaint();
+        });
 
-        GridBagConstraints gbc =
-                new GridBagConstraints();
+        GridBagConstraints gbc = new GridBagConstraints();
 
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
+        gbc.anchor = GridBagConstraints.SOUTHWEST;
+        gbc.insets = new Insets(10, 10, 10, 10);
 
-        gbc.anchor =
-                GridBagConstraints.SOUTHWEST;
-
-        gbc.insets =
-                new Insets(
-                        10,
-                        10,
-                        10,
-                        10
-                );
-
-        panel.add(
-                pauseButton,
-                gbc
-        );
+        panel.add(pauseButton, gbc);
     }
 }
