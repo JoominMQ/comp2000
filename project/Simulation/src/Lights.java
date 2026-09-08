@@ -1,16 +1,15 @@
 import java.awt.Color;
 import java.awt.Graphics;
 
-public class Lights {
-    private int x;
-    private int y;
+public class Lights extends Objects {
+
     private int width;
     private int height;
     private int colourMode;
 
-    public Lights(int ecks, int why, int with, int hite) {
-        this.x = ecks;
-        this.y = why;
+    public Lights(int x, int y, int with, int hite) {
+        super(x, y);
+
         this.width = with;
         this.height = hite;
         this.colourMode = 1; // Start green
@@ -27,7 +26,7 @@ public class Lights {
             g.setColor(Color.RED);
         }
 
-        g.fillRect(x, y, width, height);
+        g.fillRect((int)x, (int)y, width, height);
     }
 
     public void changeLight(int type) {
@@ -39,6 +38,22 @@ public class Lights {
 
     public int getColour() {
         return colourMode;
+    }
+    public boolean isGreen() {
+        return colourMode == 1;
+    }
+    public boolean isYellow() {
+        return colourMode == 2;
+    }
+    public boolean isRed() {
+        return colourMode == 3;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+    public int getHeight() {
+        return height;
     }
 
 

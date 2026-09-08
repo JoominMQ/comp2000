@@ -1,28 +1,31 @@
 import java.awt.Graphics;
+import java.util.ArrayList;
 
-public class lightManager {
+/* hi alex the left light is 0, 
+the right light is 1, 
+the top light is 2, 
+and the bottom light is 3. 
+*/
 
-    private Lights lightLeft;
-    private Lights lightRight;
-    private Lights lightTop;
-    private Lights lightBottom;
+public class LightManager {
+
+    // w generics implementation
+    private ArrayList<Lights> lights = new ArrayList<>();
 
     private int state;
     private int elapsedTime;
 
-    public lightManager() {
+    public LightManager() {
 
-        // Create lights
-        lightLeft = new Lights(290, 300, 10, 200);
-        lightRight = new Lights(500, 300, 10, 200);
-        lightTop = new Lights(300, 290, 200, 10);
-        lightBottom = new Lights(300, 500, 200, 10);
+        // creating lights
+        lights.add(new Lights(290, 300, 10, 200)); // 0 = left
+        lights.add(new Lights(500, 300, 10, 200)); // 1 = right
+        lights.add(new Lights(300, 290, 200, 10)); // 2 = top
+        lights.add(new Lights(300, 500, 200, 10)); // 3 = bottom
 
-        // Starting state
         state = 1;
         elapsedTime = 0;
 
-        // Set initial light state
         setLights();
     }
 
@@ -30,42 +33,47 @@ public class lightManager {
 
         elapsedTime += 16;
 
-        // Change state based on time
-        if (state == 1 && elapsedTime >= 8000) {
+        // change state based on time
+        if (state == 1 && elapsedTime >= 8000) { // 8 seconds for green
             state = 2;
             elapsedTime = 0;
         }
 
-        else if (state == 2 && elapsedTime >= 3000) {
+        else if (state == 2 && elapsedTime >= 3000) { // 3 seconds for yellow
             state = 3;
             elapsedTime = 0;
         }
 
-        else if (state == 3 && elapsedTime >= 3000) {
+        else if (state == 3 && elapsedTime >= 3000) { // 3 seconds for all red
             state = 4;
             elapsedTime = 0;
         }
 
-        else if (state == 4 && elapsedTime >= 8000) {
+        else if (state == 4 && elapsedTime >= 8000) { // 8 seconds for green
             state = 5;
             elapsedTime = 0;
         }
 
-        else if (state == 5 && elapsedTime >= 3000) {
+        else if (state == 5 && elapsedTime >= 3000) { // 3 seconds for yellow
             state = 6;
             elapsedTime = 0;
         }
-
-        else if (state == 6 && elapsedTime >= 3000) {
+ 
+        else if (state == 6 && elapsedTime >= 3000) { // 3 seconds for all red
             state = 1;
             elapsedTime = 0;
         }
 
-        // Update lights
         setLights();
     }
 
     private void setLights() {
+
+        // Get lights from the generic ArrayList
+        Lights lightLeft = lights.get(0);
+        Lights lightRight = lights.get(1);
+        Lights lightTop = lights.get(2);
+        Lights lightBottom = lights.get(3);
 
         try {
 
@@ -120,23 +128,32 @@ public class lightManager {
                     break;
             }
 
-        }
-        catch (IllegalArgumentException e) {
-            System.out.println(
-                "Traffic light error: " + e.getMessage()
-            );
+        } catch (IllegalArgumentException e) {
+            System.out.println("traffic light error" + e.getMessage());
         }
     }
 
     public void draw(Graphics g) {
-
-        lightLeft.spawnLight(g);
-        lightRight.spawnLight(g);
-        lightTop.spawnLight(g);
-        lightBottom.spawnLight(g);
+        // loop to draw all lights
+        for (Lights light : lights) {
+            light.spawnLight(g);
+        }
     }
 
     public int getState() {
         return state;
+    }
+
+    public Lights getLightLeft() {
+        return lights.get(0);
+    }
+    public Lights getLightRight() {
+        return lights.get(1);
+    }
+    public Lights getLightTop() {
+        return lights.get(2);
+    }
+    public Lights getLightBottom() {
+        return lights.get(3);
     }
 }
