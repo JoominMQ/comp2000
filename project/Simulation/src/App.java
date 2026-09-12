@@ -100,6 +100,17 @@ public class App {
             panel.repaint();
         });
 
+        JButton settingsButton = new JButton("Settings");
+
+        settingsButton.addActionListener(e -> {
+            SettingsDialog dialog = new SettingsDialog(frame, vehicleManager, pedestrianManager);
+            dialog.setVisible(true);
+        });
+
+        JPanel buttonBar = new JPanel();
+        buttonBar.add(pauseButton);
+        buttonBar.add(settingsButton);
+
         GridBagConstraints gbc = new GridBagConstraints();
 
         gbc.weightx = 1.0;
@@ -107,6 +118,6 @@ public class App {
         gbc.anchor = GridBagConstraints.SOUTHWEST;
         gbc.insets = new Insets(10, 10, 10, 10);
 
-        panel.add(pauseButton, gbc);
+        panel.add(buttonBar, gbc);
     }
 }

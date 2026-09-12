@@ -16,6 +16,19 @@ public class PedestrianManager {
 
     private static final float WALK_SPEED = 100;
 
+    private int maxPedestrians = 10; // default cap, adjustable via settings window
+
+    public int getMaxPedestrians() {
+        return maxPedestrians;
+    }
+
+    public void setMaxPedestrians(int maxPedestrians) {
+        if (maxPedestrians < 0) {
+            throw new IllegalArgumentException("Max pedestrians must be a non-negative value.");
+        }
+        this.maxPedestrians = maxPedestrians;
+    }
+
     public PedestrianManager(LightManager trafficLights, VehicleManager vehicleManager) {
         this.trafficLights = trafficLights;
         this.vehicleManager = vehicleManager;
@@ -24,62 +37,66 @@ public class PedestrianManager {
 
     public void update(double deltaTime, float worldTimer) {
 
-        // Spawn pedestrians
+        // Spawn pedestrians, but never exceed the configured maximum
         if (worldTimer - lastPedestrianSpawnTime >= PEDESTRIAN_SPAWN_INTERVAL_MS) {
 
-            Random random = new Random();
-            int side = random.nextInt(4);
+            if (pedestrians.size() < maxPedestrians) {
 
-            Pedestrian pedestrian = null;
+                Random random = new Random();
+                int side = random.nextInt(4);
 
-            switch (side) {
+                Pedestrian pedestrian = null;
 
-                // Top: right to left
-                case 0:
-                    pedestrian = new Pedestrian(
-                        800,
-                        295,
-                        7,
-                        WALK_SPEED,
-                        (float) Math.PI
-                    );
-                    break;
+                switch (side) {
 
-                // Bottom: left to right
-                case 1:
-                    pedestrian = new Pedestrian(
-                        0,
-                        505,
-                        7,
-                        WALK_SPEED,
-                        0
-                    );
-                    break;
+                    // Top: right to left
+                    case 0:
+                        pedestrian = new Pedestrian(
+                            800,
+                            295,
+                            7,
+                            WALK_SPEED,
+                            (float) Math.PI
+                        );
+                        break;
 
-                // Left: bottom to top
-                case 2:
-                    pedestrian = new Pedestrian(
-                        295,
-                        800,
-                        7,
-                        WALK_SPEED,
-                        (float) (3 * Math.PI / 2)
-                    );
-                    break;
+                    // Bottom: left to right
+                    case 1:
+                        pedestrian = new Pedestrian(
+                            0,
+                            505,
+                            7,
+                            WALK_SPEED,
+                            0
+                        );
+                        break;
 
-                // Right: top to bottom
-                case 3:
-                    pedestrian = new Pedestrian(
-                        505,
-                        0,
-                        7,
-                        WALK_SPEED,
-                        (float) (Math.PI / 2)
-                    );
-                    break;
+                    // Left: bottom to top
+                    case 2:
+                        pedestrian = new Pedestrian(
+                            295,
+                            800,
+                            7,
+                            WALK_SPEED,
+                            (float) (3 * Math.PI / 2)
+                        );
+                        break;
+
+                    // Right: top to bottom
+                    case 3:
+                        pedestrian = new Pedestrian(
+                            505,
+                            0,
+                            7,
+                            WALK_SPEED,
+                            (float) (Math.PI / 2)
+                        );
+                        break;
+                }
+
+                pedestrians.add(pedestrian);
             }
 
-            pedestrians.add(pedestrian);
             lastPedestrianSpawnTime = (int) worldTimer;
         }
 

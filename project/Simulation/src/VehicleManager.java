@@ -14,6 +14,19 @@ public class VehicleManager {
     static private final int CAR_SPAWN_INTERVAL_MS = 1500;
     private LightManager trafficLights;
 
+    private int maxVehicles = 20; // default cap, adjustable via settings window
+
+    public int getMaxVehicles() {
+        return maxVehicles;
+    }
+
+    public void setMaxVehicles(int maxVehicles) {
+        if (maxVehicles < 0) {
+            throw new IllegalArgumentException("Max vehicles must be a non-negative value.");
+        }
+        this.maxVehicles = maxVehicles;
+    }
+
     public VehicleManager(LightManager trafficLights) {
         this.trafficLights = trafficLights;
         vehicles = new ArrayList<>();
@@ -39,18 +52,20 @@ public class VehicleManager {
             }
             car.move(deltaTime);
         }
-        // Spawn new cars at intervals
+        // Spawn new cars at intervals, but never exceed the configured maximum
         if (worldTimer - lastCarSpawnTime >= CAR_SPAWN_INTERVAL_MS) {
-            Random rand = new Random();
-            int randomNumber = rand.nextInt(4) + 1; // Generates 0-3, then adds 1
-            Car newCar = null;
-            switch (randomNumber) {
-                case 1 -> newCar = new Car(0, 340, 20, 50, 0, Color.CYAN); // West lane
-                case 2 -> newCar = new Car(450, 0, 20, 50, (float) (Math.PI / 2), Color.CYAN); // North lane
-                case 3 -> newCar = new Car(350, 740, 20, 50, (float) (3 * Math.PI / 2), Color.CYAN); // South lane
-                case 4 -> newCar = new Car(740, 440, 20, 50, (float) Math.PI, Color.CYAN); // East lane
+            if (vehicles.size() < maxVehicles) {
+                Random rand = new Random();
+                int randomNumber = rand.nextInt(4) + 1; // Generates 0-3, then adds 1
+                Car newCar = null;
+                switch (randomNumber) {
+                    case 1 -> newCar = new Car(0, 340, 20, 50, 0, Color.CYAN); // West lane
+                    case 2 -> newCar = new Car(450, 0, 20, 50, (float) (Math.PI / 2), Color.CYAN); // North lane
+                    case 3 -> newCar = new Car(350, 740, 20, 50, (float) (3 * Math.PI / 2), Color.CYAN); // South lane
+                    case 4 -> newCar = new Car(740, 440, 20, 50, (float) Math.PI, Color.CYAN); // East lane
+                }
+                vehicles.add(newCar);
             }
-            vehicles.add(newCar);
             lastCarSpawnTime = (int) worldTimer;
         }
         // Check for collisions between vehicles
