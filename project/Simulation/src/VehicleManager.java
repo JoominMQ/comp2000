@@ -4,6 +4,7 @@
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
@@ -52,6 +53,10 @@ public class VehicleManager {
             }
             car.move(deltaTime);
         }
+
+        // Remove cars that have driven off the edge of the world
+        removeOffscreenVehicles();
+
         // Spawn new cars at intervals, but never exceed the configured maximum
         if (worldTimer - lastCarSpawnTime >= CAR_SPAWN_INTERVAL_MS) {
             if (vehicles.size() < maxVehicles) {
@@ -71,6 +76,24 @@ public class VehicleManager {
         // Check for collisions between vehicles
         checkCollisions();
         
+    }
+
+    // Removes any car that has moved off the visible 800x800 world so the
+    // vehicle list (and the spawn cap) doesn't fill up with cars nobody can see.
+    private void removeOffscreenVehicles() {
+        float BOUNDS_BUFFER = 50f; // let a car fully clear the frame before deleting it
+
+        Iterator<Car> iterator = vehicles.iterator();
+
+        while (iterator.hasNext()) {
+            Car car = iterator.next();
+            float[] pos = car.getPosition();
+
+            if (pos[0] < -BOUNDS_BUFFER || pos[0] > 800 + BOUNDS_BUFFER
+                    || pos[1] < -BOUNDS_BUFFER || pos[1] > 800 + BOUNDS_BUFFER) {
+                iterator.remove();
+            }
+        }
     }
 
 
